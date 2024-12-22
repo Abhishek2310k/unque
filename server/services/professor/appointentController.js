@@ -3,7 +3,7 @@ import connection from "../../db.js";
 
 export async function modify_appointments(req,res) {
     try {
-        const {username,appointment_index,task} = req.body;
+        const {username,appointment_index,task,appointment_id} = req.body;
         const [rows] = await connection.execute(
             'SELECT apointment FROM professor WHERE username = ?',
             [username]
@@ -54,7 +54,7 @@ export async function check_appointments(req,res) {
         }
 
         const [rows] = await connection.query(
-            'SELECT prof_username, slot_index FROM appointments_made WHERE prof_username = ?',
+            'SELECT prof_username, slot_index, id FROM appointments_made WHERE prof_username = ?',
             [username]
         );
 

@@ -11,9 +11,8 @@ describe('Professor API Tests', () => {
                 username: 'testuser',
                 password: 'testpassword123'
             },
-            failOnStatusCode: false // Prevent Cypress from failing on 4xx/5xx status
+            failOnStatusCode: false
         }).then((response) => {
-            // Check if response status is 200 and message contains username
             expect(response.status).to.eq(200);
             expect(response.body.message).to.eq('testuser');
         });
@@ -28,9 +27,8 @@ describe('Professor API Tests', () => {
                 username: 'testuser',
                 password: 'testpassword123'
             },
-            failOnStatusCode: false // Prevent Cypress from failing on 4xx/5xx status
+            failOnStatusCode: false 
         }).then((response) => {
-            // Check if login was successful
             expect(response.status).to.eq(200);
             expect(response.body.message).to.eq('fine');
         });
@@ -45,9 +43,8 @@ describe('Professor API Tests', () => {
                 username: 'testuser',
                 password: 'wrongpassword'
             },
-            failOnStatusCode: false // Prevent Cypress from failing on 4xx/5xx status
+            failOnStatusCode: false 
         }).then((response) => {
-            // Check if password is incorrect
             expect(response.status).to.eq(401);
             expect(response.body.message).to.eq('Password incorrect');
         });
@@ -62,9 +59,8 @@ describe('Professor API Tests', () => {
                 username: 'nonexistentuser',
                 password: 'password123'
             },
-            failOnStatusCode: false // Prevent Cypress from failing on 4xx/5xx status
+            failOnStatusCode: false 
         }).then((response) => {
-            // Check if user does not exist
             expect(response.status).to.eq(404);
             expect(response.body.message).to.eq('user does not exist');
         });
@@ -72,8 +68,6 @@ describe('Professor API Tests', () => {
 
 });
 
-
-// cypress/e2e/getAppointments.test.js
 
 describe('Get Appointments API Tests', () => {
 
@@ -95,9 +89,8 @@ describe('Get Appointments API Tests', () => {
         cy.request({
             method: 'GET',
             url: '/student/get_appointments',
-            failOnStatusCode: false // Prevent Cypress from failing on 4xx/5xx status
+            failOnStatusCode: false
         }).then((response) => {
-            // Check if the response contains the expected error message for missing username
             expect(response.status).to.eq(400);
             expect(response.body.data).to.eq('prof_username is required');
         });
@@ -108,10 +101,9 @@ describe('Get Appointments API Tests', () => {
         cy.request({
             method: 'GET',
             url: '/student/get_appointments',
-            qs: { prof_username: 'nonexistentProfessor' },  // Non-existent username
-            failOnStatusCode: false // Prevent Cypress from failing on 4xx/5xx status
+            qs: { prof_username: 'nonexistentProfessor' },
+            failOnStatusCode: false 
         }).then((response) => {
-            // Check if the response contains the expected error message for non-existent user
             expect(response.status).to.eq(404);
             expect(response.body.data).to.eq('Professor not found');
         });
@@ -122,19 +114,16 @@ describe('Get Appointments API Tests', () => {
 
 describe('student 1 booking the slot', () => {
 
-
-    // Test for successfully booking an available slot (orig_string[interval_index] === '0')
     it('should return 201 if the appointment is successfully booked', () => {
         cy.request({
             method: 'PUT',
             url: '/student/book_appointment',
             body: {
-                prof_username: 'testuser',    // Existing professor username
-                student_username: 'abhishek',    // Existing student username
-                interval_index: 5                    // Index of the available slot ('0')
+                prof_username: 'testuser',
+                student_username: 'abhishek',
+                interval_index: 5            
             }
         }).then((response) => {
-            // Ensure the response status is 201 and success message is returned
             expect(response.status).to.eq(201);
             expect(response.body.error).to.eq(false);
             expect(response.body.data).to.eq('Appointment booked');
@@ -154,9 +143,9 @@ describe('student 2 booking the slot', () => {
             method: 'PUT',
             url: '/student/book_appointment',
             body: {
-                prof_username: 'testuser',    // Existing professor username
-                student_username: 'abhishek1',    // Existing student username
-                interval_index: 7                // Index of the available slot ('0')
+                prof_username: 'testuser', 
+                student_username: 'abhishek1',
+                interval_index: 7             
             }
         }).then((response) => {
             // Ensure the response status is 201 and success message is returned
@@ -176,13 +165,12 @@ describe('p1 cancelling the appointment with s1', () => {
             method: 'PUT',
             url: '/professor/modify_appointments',
             body: {
-                username: 'testuser',         // Existing professor username
-                appointment_index: 1,               // Index of the appointment slot to cancel
-                task: true,                         // Task is true for canceling the slot
-                appointment_id: 2                // ID of the appointment to be deleted
+                username: 'testuser',         
+                appointment_index: 1,         
+                task: true,                   
+                appointment_id: 2             
             }
         }).then((response) => {
-            // Ensure the response status is 200 and success message is returned
             expect(response.status).to.eq(200);
             expect(response.body.error).to.eq(false);
             expect(response.body.data).to.eq("appointments_updated");
@@ -195,19 +183,16 @@ describe('p1 cancelling the appointment with s1', () => {
             method: 'PUT',
             url: 'professor/modify_appointments',
             body: {
-                username: 'nonExistentProfessor', // Non-existent professor username
-                appointment_index: 4,             // Index of the appointment slot to cancel
-                task: true,                       // Task is true for canceling the slot
-                appointment_id: 1234              // ID of the appointment to be deleted
+                username: 'nonExistentProfessor', 
+                appointment_index: 4,             
+                task: true,                       
+                appointment_id: 1234              
             },
-            failOnStatusCode: false  // Prevent Cypress from failing on 4xx/5xx status
+            failOnStatusCode: false
         }).then((response) => {
-            // Ensure the response status is 404 and appropriate error message is returned
             expect(response.status).to.eq(404);
             expect(response.body.error).to.eq(true);
             expect(response.body.data).to.eq('Professor not found');
         });
     });
 });
-
-

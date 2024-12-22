@@ -4,8 +4,31 @@ import professor from "./controller/professor.js";
 import cors from "cors";
 import cluster from "cluster";
 import os from "os";
+import cookieParser from "cookie-parser";
+import swaggerUi from "swagger-ui-express";
+import swaggerJsdoc from "swagger-jsdoc";
 
 const numCpus = os.cpus().length;
+
+// Swagger configuration
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.0",
+        info: {
+            title: "API Documentation",
+            version: "1.0.0",
+            description: "API documentation for the application",
+        },
+        servers: [
+            {
+                url: "http://localhost:3000",
+            },
+        ],
+    },
+    apis: ["./controller/*.js"], // Path to your route files for Swagger to read the annotations
+};
+
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
 if (cluster.isPrimary) {
     console.log(`Primary ${process.pid} is running`);
@@ -16,20 +39,26 @@ if (cluster.isPrimary) {
     }
 
     cluster.on('exit', (worker, code, signal) => {
-        console.log(`worker ${worker.process.pid} died`);
+        console.log(`Worker ${worker.process.pid} died`);
     });
-}
-
-else {
+} else {
     const app = express();
 
     app.use(express.json());
-    app.use('/student',student);
-    app.use('/professor',professor);
+    app.use(cookieParser());
     app.use(cors());
 
-    app.get('/',(req,res) => {
-        return res.status(200).json({message:"Hello World"});
-    })
-    app.listen(3000,()=>{console.log("server is running")});
+    // Swagger route
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+    app.use('/student', student);
+    app.use('/professor', professor);
+
+    app.get('/', (req, res) => {
+        return res.status(200).json({ message: "Hello World" });
+    });
+
+    app.listen(3000, () => {
+        console.log("Server is running");
+    });
 }

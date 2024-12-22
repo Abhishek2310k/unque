@@ -9,5 +9,6 @@ export const checkAppointmentsSchema = z.object({
 export const modifyAppointmentsSchema = z.object({
     username: z.string(),
     appointment_index: z.number(),
-    task: z.boolean(),
+    task: z.number(),
+    appointment_id:z.number().optional()
 });

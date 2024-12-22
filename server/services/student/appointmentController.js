@@ -69,7 +69,7 @@ export async function checkAppointments(req, res) {
         }
 
         const [rows] = await connection.query(
-            'SELECT prof_username, slot_index FROM appointments_made WHERE s_username = ?',
+            'SELECT prof_username, slot_index, id FROM appointments_made WHERE s_username = ?',
             [username]
         );
 

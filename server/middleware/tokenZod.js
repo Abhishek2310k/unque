@@ -3,14 +3,18 @@ import {ZodError} from "zod";
 import respone_setter from "../utility_fun.js";
 
 export function authCheck (req,res,next) {
-    const token = req.headers.authorization;
-    if (!token) {
-        console.log('token is not sent');
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            console.log('token is not sent');
+            next();
+        }
+        const validation = jwt.verify(token,'session_secret');
+        console.log(validation);
         next();
+    }catch (err) {
+        respone_setter(res,500,err,"some error with the token verification");
     }
-    const validation = jwt.verify(token,'session_secret');
-    console.log(validation);
-    next();
 }
 
 export function validateData(schema,bodyFlag) {
